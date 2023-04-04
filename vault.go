@@ -8,6 +8,7 @@ import (
 type Vault struct {
 	Address string
 	Token   string
+	Secrets []KVSecret
 }
 
 type KVSecret struct {
@@ -26,26 +27,41 @@ func NewVault(address, token string) *Vault {
 	}
 }
 
-func (v *Vault) GetSecrets(path string) ([]KVSecret, error) {
+func (v *Vault) GetSecrets(path string) error {
 	cfg := api.DefaultConfig()
 	cfg.Address = v.Address
 	client, err := api.NewClient(cfg)
 	if err != nil {
-		return nil, logs.Local().Errorf("vault: %v", err)
+		return logs.Local().Errorf("vault: %v", err)
 	}
 	client.SetToken(v.Token)
 	data, err := client.Logical().Read(path)
 	if err != nil {
-		return nil, logs.Local().Errorf("vault: %v", err)
+		return logs.Local().Errorf("vault: %v", err)
 	}
 	if data == nil {
-		return nil, logs.Local().Errorf("vault: %v", "no data returned")
+		return logs.Local().Errorf("vault: %v", "no data returned")
 	}
 	if data.Data == nil {
-		return nil, logs.Local().Errorf("vault: %v", "no data returned")
+		return logs.Local().Errorf("vault: %v", "no data returned")
 	}
 
-	return parseSecrets(data.Data)
+	secrets, err := parseSecrets(data.Data)
+	if err != nil {
+		return logs.Local().Errorf("vault: %v", err)
+	}
+
+	v.Secrets = secrets
+	return nil
+}
+
+func (v *Vault) GetSecret(key string) (string, error) {
+	for _, s := range v.Secrets {
+		if s.Key == key {
+			return s.Value, nil
+		}
+	}
+	return "", logs.Local().Errorf("vault: %v", "key not found")
 }
 
 func parseSecrets(data map[string]interface{}) ([]KVSecret, error) {

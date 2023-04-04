@@ -14,12 +14,18 @@ import (
 
 func main() {
   v := vault.NewVault("vault.vault", "vault-token")
-  secrets, err := v.GetSecrets("kv/secret")
+  err := v.GetSecrets("kv/secret")
   if err != nil {
     log.Fatal(err)
   }
 
-  fmt.Println(secrets)
+  sec, err := v.GetSecret("tester")
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  fmt.Println(v.Secrets)
+  fmt.Println(sec)
 }
 ```
 
