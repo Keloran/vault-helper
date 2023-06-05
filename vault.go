@@ -46,7 +46,7 @@ func (v *Vault) GetSecrets(path string) error {
 		return logs.Local().Errorf("vault: %v", "no data returned")
 	}
 
-	secrets, err := parseSecrets(data.Data)
+	secrets, err := ParseData(data.Data, "data")
 	if err != nil {
 		return logs.Local().Errorf("vault: %v", err)
 	}
@@ -64,14 +64,14 @@ func (v *Vault) GetSecret(key string) (string, error) {
 	return "", logs.Local().Errorf("vault: %v", "key not found")
 }
 
-func parseSecrets(data map[string]interface{}) ([]KVSecret, error) {
+func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, error) {
 	var secrets []KVSecret
 	for k, v := range data {
 		if v == nil {
 			continue
 		}
-		if v.(string) == "data" {
-			s, err := parseSecrets(v.(map[string]interface{}))
+		if v.(string) == filterName {
+			s, err := ParseData(v.(map[string]interface{}), filterName)
 			if err != nil {
 				return nil, logs.Local().Errorf("vault: %v", err)
 			}
