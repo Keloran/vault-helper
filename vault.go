@@ -6,9 +6,10 @@ import (
 )
 
 type Vault struct {
-	Address string
-	Token   string
-	Secrets []KVSecret
+	Address       string
+	Token         string
+	Secrets       []KVSecret
+	LeaseDuration int
 }
 
 type KVSecret struct {
@@ -44,6 +45,10 @@ func (v *Vault) GetSecrets(path string) error {
 	}
 	if data.Data == nil {
 		return logs.Local().Errorf("vault: %v", "no data returned")
+	}
+
+	if data.LeaseDuration != 0 {
+		v.LeaseDuration = data.LeaseDuration
 	}
 
 	secrets, err := ParseData(data.Data, "data")
