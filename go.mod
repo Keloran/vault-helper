@@ -3,7 +3,7 @@ module github.com/keloran/vault-helper
 go 1.20
 
 require (
-	github.com/bugfixes/go-bugfixes v0.8.5
+	github.com/bugfixes/go-bugfixes v0.9.7
 	github.com/hashicorp/vault/api v1.9.2
 )
 
