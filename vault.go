@@ -5,11 +5,41 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
+type LogicalClient interface {
+	Read(string) (*api.Secret, error)
+}
+
+type RealVaultClient struct {
+	Client *api.Client
+}
+
+func (r *RealVaultClient) Logical() LogicalClient {
+	return &RealLogicalClient{Logical: r.Client.Logical()}
+}
+
+func (r *RealVaultClient) SetToken(token string) {
+	r.Client.SetToken(token)
+}
+
+type RealLogicalClient struct {
+	Logical *api.Logical
+}
+
+func (r *RealLogicalClient) Read(path string) (*api.Secret, error) {
+	return r.Logical.Read(path)
+}
+
+type VaultClient interface {
+	Logical() LogicalClient
+	SetToken(string)
+}
+
 type Vault struct {
+	Client        VaultClient
 	Address       string
 	Token         string
-	Secrets       []KVSecret
 	LeaseDuration int
+	KVSecrets     []KVSecret
 }
 
 type KVSecret struct {
@@ -22,21 +52,20 @@ type KVSecretData struct {
 }
 
 func NewVault(address, token string) *Vault {
+	cfg := api.DefaultConfig()
+	cfg.Address = address
+	client, _ := api.NewClient(cfg) // Handle error appropriately
+
 	return &Vault{
+		Client:  &RealVaultClient{Client: client},
 		Address: address,
 		Token:   token,
 	}
 }
 
 func (v *Vault) GetSecrets(path string) error {
-	cfg := api.DefaultConfig()
-	cfg.Address = v.Address
-	client, err := api.NewClient(cfg)
-	if err != nil {
-		return logs.Local().Errorf("vault: %v", err)
-	}
-	client.SetToken(v.Token)
-	data, err := client.Logical().Read(path)
+	v.Client.SetToken(v.Token)
+	data, err := v.Client.Logical().Read(path)
 	if err != nil {
 		return logs.Local().Errorf("vault: %v", err)
 	}
@@ -56,12 +85,12 @@ func (v *Vault) GetSecrets(path string) error {
 		return logs.Local().Errorf("vault: %v", err)
 	}
 
-	v.Secrets = secrets
+	v.KVSecrets = secrets
 	return nil
 }
 
 func (v *Vault) GetSecret(key string) (string, error) {
-	for _, s := range v.Secrets {
+	for _, s := range v.KVSecrets {
 		if s.Key == key {
 			return s.Value, nil
 		}
@@ -88,4 +117,8 @@ func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, erro
 		})
 	}
 	return secrets, nil
+}
+
+func (v *Vault) Secrets() []KVSecret {
+	return v.KVSecrets
 }
