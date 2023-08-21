@@ -5,6 +5,13 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
+type VaultHelper interface {
+	GetSecrets(path string) error
+	GetSecret(key string) (string, error)
+	Secrets() []KVSecret
+	LeaseDuration() int
+}
+
 type LogicalClient interface {
 	Read(string) (*api.Secret, error)
 }
@@ -35,11 +42,11 @@ type VaultClient interface {
 }
 
 type Vault struct {
-	Client        VaultClient
-	Address       string
-	Token         string
-	LeaseDuration int
-	KVSecrets     []KVSecret
+	Client    VaultClient
+	Address   string
+	Token     string
+	Lease     int
+	KVSecrets []KVSecret
 }
 
 type KVSecret struct {
@@ -77,7 +84,7 @@ func (v *Vault) GetSecrets(path string) error {
 	}
 
 	if data.LeaseDuration != 0 {
-		v.LeaseDuration = data.LeaseDuration
+		v.Lease = data.LeaseDuration
 	}
 
 	secrets, err := ParseData(data.Data, "data")
@@ -121,4 +128,8 @@ func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, erro
 
 func (v *Vault) Secrets() []KVSecret {
 	return v.KVSecrets
+}
+
+func (v *Vault) LeaseDuration() int {
+	return v.Lease
 }
