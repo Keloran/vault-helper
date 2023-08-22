@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/bugfixes/go-bugfixes v0.9.7
 	github.com/hashicorp/vault/api v1.9.2
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
@@ -30,6 +30,5 @@ require (
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
