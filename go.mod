@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/bugfixes/go-bugfixes v0.9.7
-	github.com/hashicorp/vault/api v1.9.2
+	github.com/hashicorp/vault/api v1.10.0
 	github.com/stretchr/testify v1.8.4
 )
 
