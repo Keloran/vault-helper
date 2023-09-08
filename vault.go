@@ -74,13 +74,13 @@ func (v *Vault) GetSecrets(path string) error {
 	v.Client.SetToken(v.Token)
 	data, err := v.Client.Logical().Read(path)
 	if err != nil {
-		return logs.Local().Errorf("vault: %v", err)
+		return logs.Local().Errorf("path: %s, err: %v", path, err)
 	}
 	if data == nil {
-		return logs.Local().Errorf("vault: %v", "no data returned")
+		return logs.Local().Errorf("path: %s, err: %s", path, "no data returned")
 	}
 	if data.Data == nil {
-		return logs.Local().Errorf("vault: %v", "no data returned")
+		return logs.Local().Errorf("path: %s, err: %s", path, "no data returned")
 	}
 
 	if data.LeaseDuration != 0 {
@@ -89,7 +89,7 @@ func (v *Vault) GetSecrets(path string) error {
 
 	secrets, err := ParseData(data.Data, "data")
 	if err != nil {
-		return logs.Local().Errorf("vault: %v", err)
+		return logs.Local().Errorf("path: %s, err: %v", path, err)
 	}
 
 	v.KVSecrets = secrets
@@ -102,7 +102,7 @@ func (v *Vault) GetSecret(key string) (string, error) {
 			return s.Value, nil
 		}
 	}
-	return "", logs.Local().Errorf("vault: %v", "key not found")
+	return "", logs.Local().Errorf("key: '%s' not found", key)
 }
 
 func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, error) {
@@ -127,7 +127,7 @@ func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, erro
 		case map[string]interface{}:
 			s, err := ParseData(value, filterName)
 			if err != nil {
-				return nil, logs.Local().Errorf("vault: %v", err)
+				return nil, logs.Local().Errorf("data: %+v, filter: %s, err: %v", data, filterName, err)
 			}
 			secrets = append(secrets, s...)
 		}
