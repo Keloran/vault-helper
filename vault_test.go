@@ -1,9 +1,10 @@
 package vault_helper
 
 import (
+	"testing"
+
 	"github.com/hashicorp/vault/api"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type MockVaultClient struct {
