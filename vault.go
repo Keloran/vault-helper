@@ -111,9 +111,6 @@ func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, erro
 		if v == nil {
 			continue
 		}
-		if k == filterName {
-			continue
-		}
 
 		switch value := v.(type) {
 		case string:
