@@ -111,17 +111,26 @@ func ParseData(data map[string]interface{}, filterName string) ([]KVSecret, erro
 		if v == nil {
 			continue
 		}
-		if v.(string) == filterName {
-			s, err := ParseData(v.(map[string]interface{}), filterName)
+		if k == filterName {
+			continue
+		}
+
+		switch value := v.(type) {
+		case string:
+			if value == filterName {
+				continue
+			}
+			secrets = append(secrets, KVSecret{
+				Key:   k,
+				Value: value,
+			})
+		case map[string]interface{}:
+			s, err := ParseData(value, filterName)
 			if err != nil {
 				return nil, logs.Local().Errorf("vault: %v", err)
 			}
 			secrets = append(secrets, s...)
 		}
-		secrets = append(secrets, KVSecret{
-			Key:   k,
-			Value: v.(string),
-		})
 	}
 	return secrets, nil
 }
