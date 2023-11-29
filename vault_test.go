@@ -68,3 +68,44 @@ func TestGetSecrets(t *testing.T) {
 	assert.Nil(t, err)
 	// Add more assertions based on the expected behavior
 }
+
+func TestNewVault(t *testing.T) {
+	v := NewVault("mockaddress", "mocktoken")
+	assert.NotNil(t, v)
+}
+
+func TestGetSecret(t *testing.T) {
+	mockLogical := &MockLogical{
+		MockRead: func(path string) (*api.Secret, error) {
+			// Return a mock Secret for testing purposes
+			return &api.Secret{
+				Data: map[string]interface{}{
+					"key1": "value1",
+					"key2": "value2",
+				},
+			}, nil
+		},
+	}
+
+	mockClient := &MockVaultClient{
+		MockLogical: func() LogicalClient {
+			return mockLogical
+		},
+		MockSetToken: func(token string) {
+			// Do nothing or validate the token
+		},
+	}
+
+	v := &Vault{
+		Client:  mockClient,
+		Address: "mockaddress",
+		Token:   "mocktoken",
+	}
+
+	err := v.GetSecrets("mockpath")
+	assert.Nil(t, err)
+
+	secret, err := v.GetSecret("key1")
+	assert.Nil(t, err)
+	assert.Equal(t, "value1", secret)
+}

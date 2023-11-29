@@ -71,6 +71,10 @@ func NewVault(address, token string) *Vault {
 }
 
 func (v *Vault) GetSecrets(path string) error {
+	if path == "" {
+		return logs.Local().Errorf("path: %s, err: %s", path, "no path provided")
+	}
+
 	v.Client.SetToken(v.Token)
 	data, err := v.Client.Logical().Read(path)
 	if err != nil {
