@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/bugfixes/go-bugfixes v0.10.0
 	github.com/hashicorp/vault/api v1.12.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
