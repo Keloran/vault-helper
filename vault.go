@@ -3,6 +3,7 @@ package vault_helper
 import (
 	"github.com/bugfixes/go-bugfixes/logs"
 	"github.com/hashicorp/vault/api"
+  "time"
 )
 
 type VaultHelper interface {
@@ -47,6 +48,13 @@ type Vault struct {
 	Token     string
 	Lease     int
 	KVSecrets []KVSecret
+}
+
+type Details struct {
+  CredPath string `env:"VAULT_CRED_PATH" envDefault:"secret/data/chewedfeed/creds"`
+  DetailsPath string `env:"VAULT_DETAILS_PATH" envDefault:"secret/data/chewedfeed/details"`
+
+  ExpireTime time.Time
 }
 
 type KVSecret struct {

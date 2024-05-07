@@ -7,35 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type MockVaultClient struct {
-	MockLogical  func() LogicalClient
-	MockSetToken func(string)
-}
-
-func (m *MockVaultClient) Logical() LogicalClient {
-	if m.MockLogical != nil {
-		return m.MockLogical()
-	}
-	return nil
-}
-
-func (m *MockVaultClient) SetToken(token string) {
-	if m.MockSetToken != nil {
-		m.MockSetToken(token)
-	}
-}
-
-type MockLogical struct {
-	MockRead func(string) (*api.Secret, error)
-}
-
-func (m *MockLogical) Read(path string) (*api.Secret, error) {
-	if m.MockRead != nil {
-		return m.MockRead(path)
-	}
-	return nil, nil
-}
-
 func TestGetSecrets(t *testing.T) {
 	mockLogical := &MockLogical{
 		MockRead: func(path string) (*api.Secret, error) {
