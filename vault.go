@@ -6,6 +6,16 @@ import (
   "time"
 )
 
+type VaultDetails struct {
+  Address string
+  Token string
+
+  CredPath string
+  DetailsPath string
+
+  ExpireTime time.Time
+}
+
 type VaultHelper interface {
 	GetSecrets(path string) error
 	GetSecret(key string) (string, error)
