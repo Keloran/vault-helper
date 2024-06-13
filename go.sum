@@ -1,5 +1,5 @@
-github.com/bugfixes/go-bugfixes v0.12.17 h1:8RfRWqPcjMKr8wwuW4yBcZWyhtfSHk5GLeFQqxcAn7Q=
-github.com/bugfixes/go-bugfixes v0.12.17/go.mod h1:vEKkwVTY1VSCPyRu1esWOzExVHi8C/+MdjfbPco3N3w=
+github.com/bugfixes/go-bugfixes v0.12.18 h1:e3gHlHAnx7oFoczuxjiB0VWrkbOU7ZcEzlpH9wzioOs=
+github.com/bugfixes/go-bugfixes v0.12.18/go.mod h1:vEKkwVTY1VSCPyRu1esWOzExVHi8C/+MdjfbPco3N3w=
 github.com/cenkalti/backoff/v3 v3.2.2 h1:cfUAAO3yvKMYKPrvhDuHSwQnhZNk/RMHKdZqKTxfm6M=
 github.com/cenkalti/backoff/v3 v3.2.2/go.mod h1:cIeZDE3IrqwwJl6VUwCN6trj1oXrTS4rc0ij+ULvLYs=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
