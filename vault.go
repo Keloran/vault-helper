@@ -21,7 +21,8 @@ type VaultDetails struct {
 }
 
 type VaultHelper interface {
-	GetSecrets(path string) error
+	GetRemoteSecrets(path string) error
+  GetLocalSecrets(path string) error
 	GetSecret(key string) (string, error)
 	Secrets() []KVSecret
 	LeaseDuration() int

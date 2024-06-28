@@ -15,7 +15,7 @@ func TestMock(t *testing.T) {
 
 	// Test GetSecrets
 	t.Run("Get Empty Secrets", func(t *testing.T) {
-		if err := mvh.GetSecrets(""); err == nil {
+		if err := mvh.GetRemoteSecrets(""); err == nil {
 			t.Error("Expected error, got nil")
 		}
 	})
