@@ -1,0 +1,2 @@
+`{"bugfixes-agentid":"test_agent","bugfixes-secret":"test_secret","influx-bucket":"test_bucket","influx-hostname":"http://test.test","influx-org":"test_org","influx-token":"test_token","keycloak-client":"test_client","keycloak-realm":"test_realm","keycloak-secret":"test_secret","rds-db":"test_db","rds-hostname":"test.test","rds-port":"5432","stripe-secret":"test_secret"}
+`

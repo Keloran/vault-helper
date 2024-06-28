@@ -1,0 +1,2 @@
+data: map[bugfixes-agentid:test_agentid bugfixes-secret:test_secret influx-bucket:test_bucket influx-hostname:http://test.test influx-org:test_org influx-token:test_token keycloak-client:test_client keycloak-realm:test_realm keycloak-secret:test_secret rds-db:test_db rds-hostname:test.test rds-port:5432 stripe-secret:test_secret]
+metadata: map[created_time:2024-06-13T19:40:42.663263331Z custom_metadata:<nil> deletion_time: destroyed:false version:4]
