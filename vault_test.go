@@ -7,6 +7,32 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestParseJSON(t *testing.T) {
+  v := &Vault{}
+
+  err := v.GetLocalSecrets("./test_data.json")
+  assert.Nil(t, err)
+
+
+  secret, err := v.GetSecret("keycloak-realm")
+  assert.Nil(t, err)
+
+  assert.Equal(t, "test_realm", secret)
+}
+
+func TestParseDATA(t *testing.T) {
+  v := &Vault{}
+
+  err := v.GetLocalSecrets("./test_data")
+  assert.Nil(t, err)
+
+
+  secret, err := v.GetSecret("keycloak-secret")
+  assert.Nil(t, err)
+
+  assert.Equal(t, "test_secret", secret)
+}
+
 func TestGetSecrets(t *testing.T) {
 	mockLogical := &MockLogical{
 		MockRead: func(path string) (*api.Secret, error) {
@@ -35,7 +61,7 @@ func TestGetSecrets(t *testing.T) {
 		Token:   "mocktoken",
 	}
 
-	err := v.GetSecrets("mockpath")
+	err := v.GetRemoteSecrets("mockpath")
 	assert.Nil(t, err)
 	// Add more assertions based on the expected behavior
 }
@@ -73,7 +99,7 @@ func TestGetSecret(t *testing.T) {
 		Token:   "mocktoken",
 	}
 
-	err := v.GetSecrets("mockpath")
+	err := v.GetRemoteSecrets("mockpath")
 	assert.Nil(t, err)
 
 	secret, err := v.GetSecret("key1")
