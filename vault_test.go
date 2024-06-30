@@ -132,7 +132,7 @@ func TestGetSecret(t *testing.T) {
 	address, err := vaultContainer.HttpHostAddress(ctx)
 	assert.Nil(t, err)
 
-	v := NewVault(address, "MyToKeN")
+	v := NewVault(address, "MyToKeN").SetContext(ctx)
 	err = v.GetRemoteSecrets("kv/data/secret/test1")
 	assert.Nil(t, err)
 
