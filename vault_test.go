@@ -1,41 +1,62 @@
 package vault_helper
 
 import (
-	"testing"
+  "context"
+  "testing"
 
 	"github.com/hashicorp/vault/api"
 	"github.com/stretchr/testify/assert"
+  "github.com/testcontainers/testcontainers-go"
+  "github.com/testcontainers/testcontainers-go/modules/vault"
 )
 
 func TestLocalSecrets(t *testing.T) {
-  mockLogical := &MockLogical{
-		MockRead: func(path string) (*api.Secret, error) {
-			// Return a mock Secret for testing purposes
-			return &api.Secret{
-				Data: map[string]interface{}{
-					"keycloak-realm": "test-realm",
-				},
-			}, nil
-		},
-	}
+  ctx := context.Background()
+  vaultContainer, err := vault.RunContainer(ctx,
+    testcontainers.WithImage("hashicorp/vault:1.13.0"),
+    vault.WithToken("root-token"),
+    vault.WithInitCommand("secrets enable transit", "write -f transit/keys/my-key"),
+    vault.WithInitCommand("kv put secret/test foo1=bar"))
+  assert.Nil(t, err)
+  defer func() {
+    err := vaultContainer.Terminate(ctx)
+    assert.Nil(t, err)
+  }()
 
-	mockClient := &MockVaultClient{
-		MockLogical: func() LogicalClient {
-			return mockLogical
-		},
-		MockSetToken: func(token string) {
-			// Do nothing or validate the token
-		},
-	}
+  address, err := vaultContainer.HttpHostAddress(ctx)
+  assert.Nil(t, err)
 
-	v := &Vault{
-		Client:  mockClient,
-		Address: "mockaddress",
-		Token:   "mocktoken",
-	}
+  v := NewVault(address, "root-token")
+
+
+//  mockLogical := &MockLogical{
+//		MockRead: func(path string) (*api.Secret, error) {
+//			// Return a mock Secret for testing purposes
+//			return &api.Secret{
+//				Data: map[string]interface{}{
+//					"keycloak-realm": "test-realm",
+//				},
+//			}, nil
+//		},
+//	}
+//
+//	mockClient := &MockVaultClient{
+//		MockLogical: func() LogicalClient {
+//			return mockLogical
+//		},
+//		MockSetToken: func(token string) {
+//			// Do nothing or validate the token
+//		},
+//	}
+//
+//	v := &Vault{
+//		Client:  mockClient,
+//		Address: "mockaddress",
+//		Token:   "mocktoken",
+//	}
 
   // Test path secret
-  err := v.GetSecrets("./test_data.json")
+  err = v.GetSecrets("./test_data.json")
   assert.Nil(t, err)
 
   localSecret, err := v.GetSecret("keycloak-realm")
