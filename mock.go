@@ -39,6 +39,14 @@ type MockVaultHelper struct {
 	Lease     int
 }
 
+func (m *MockVaultHelper) GetSecrets(path string) error {
+  if path == "" {
+    return fmt.Errorf("path not found %s", path)
+  }
+
+  return nil
+}
+
 func (m *MockVaultHelper) GetRemoteSecrets(path string) error {
 	if path == "" {
 		return fmt.Errorf("path not found: %s", path)
