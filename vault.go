@@ -1,29 +1,30 @@
 package vault_helper
 
 import (
-  "encoding/json"
+	"context"
+	"encoding/json"
 	"github.com/bugfixes/go-bugfixes/logs"
 	"github.com/hashicorp/vault/api"
-  "os"
-  "strings"
-  "time"
+	"os"
+	"strings"
+	"time"
 )
 
 type VaultDetails struct {
-  Address string
-  Token string
+	Address string
+	Token   string
 
-  CredPath string
-  DetailsPath string
-  LocalSecretsPath string
+	CredPath         string
+	DetailsPath      string
+	LocalSecretsPath string
 
-  ExpireTime time.Time
+	ExpireTime time.Time
 }
 
 type VaultHelper interface {
-  GetSecrets(path string) error
+	GetSecrets(path string) error
 	GetRemoteSecrets(path string) error
-  GetLocalSecrets(path string) error
+	GetLocalSecrets(path string) error
 	GetSecret(key string) (string, error)
 	Secrets() []KVSecret
 	LeaseDuration() int
@@ -59,18 +60,21 @@ type VaultClient interface {
 }
 
 type Vault struct {
-	Client    VaultClient
-	Address   string
-	Token     string
+	Client  VaultClient
+	Context context.Context
+
+	Address string
+	Token   string
+
 	Lease     int
 	KVSecrets []KVSecret
 }
 
 type Details struct {
-  CredPath string `env:"VAULT_CRED_PATH" envDefault:"secret/data/chewedfeed/creds"`
-  DetailsPath string `env:"VAULT_DETAILS_PATH" envDefault:"secret/data/chewedfeed/details"`
+	CredPath    string `env:"VAULT_CRED_PATH" envDefault:"secret/data/chewedfeed/creds"`
+	DetailsPath string `env:"VAULT_DETAILS_PATH" envDefault:"secret/data/chewedfeed/details"`
 
-  ExpireTime time.Time
+	ExpireTime time.Time
 }
 
 type KVSecret struct {
@@ -85,7 +89,7 @@ type KVSecretData struct {
 func NewVault(address, token string) *Vault {
 	cfg := api.DefaultConfig()
 	cfg.Address = address
-	client, _ := api.NewClient(cfg) // Handle error appropriately
+	client, _ := api.NewClient(cfg)
 
 	return &Vault{
 		Client:  &RealVaultClient{Client: client},
@@ -94,56 +98,61 @@ func NewVault(address, token string) *Vault {
 	}
 }
 
-func (v *Vault) GetSecrets(path string) error {
-  if strings.HasPrefix(path, ".") || strings.HasPrefix(path, "/") {
-    return v.GetLocalSecrets(path)
-  }
+func (v *Vault) SetContext(ctx context.Context) *Vault {
+	v.Context = ctx
+	return v
+}
 
-  return v.GetRemoteSecrets(path)
+func (v *Vault) GetSecrets(path string) error {
+	if strings.HasPrefix(path, ".") || strings.HasPrefix(path, "/") {
+		return v.GetLocalSecrets(path)
+	}
+
+	return v.GetRemoteSecrets(path)
 }
 
 func (v *Vault) GetLocalSecrets(path string) error {
-  if path == "" {
-    return logs.Local().Errorf("path: %s, err: %s", path, "no path provided")
-  }
+	if path == "" {
+		return logs.Local().Errorf("path: %s, err: %s", path, "no path provided")
+	}
 
-  file, err := os.ReadFile(path)
-  if err != nil {
-    return logs.Local().Errorf("reading of local file: %s, err: %v", path, err)
-  }
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return logs.Local().Errorf("reading of local file: %s, err: %v", path, err)
+	}
 
-  if strings.HasSuffix(path, ".json") {
-    jdata, err := ParseJSON(file)
-    if err != nil {
-      return logs.Local().Errorf("failed to parse local JSON file: %s, err: %v", string(file), err)
-    }
-    secrets, err := ParseData(jdata, "")
-    if err != nil {
-      return logs.Local().Errorf("failed to parse post json data: %+v, err: %v", jdata, err)
-    }
+	if strings.HasSuffix(path, ".json") {
+		jdata, err := ParseJSON(file)
+		if err != nil {
+			return logs.Local().Errorf("failed to parse local JSON file: %s, err: %v", string(file), err)
+		}
+		secrets, err := ParseData(jdata, "")
+		if err != nil {
+			return logs.Local().Errorf("failed to parse post json data: %+v, err: %v", jdata, err)
+		}
 
-    v.KVSecrets = secrets
-  } else {
-    fstrng := string(file)
-    data, err := ParseDATA(fstrng)
-    if err != nil {
-      return logs.Local().Errorf("failed to parse local DATA file: %s, err: %v", fstrng, err)
-    }
-    secrets, err := ParseData(data, "")
-    if err != nil {
-      return logs.Local().Errorf("failed to parse post local data: %+v, err: %v", data, err)
-    }
-    v.KVSecrets = secrets
-  }
+		v.KVSecrets = secrets
+	} else {
+		fstrng := string(file)
+		data, err := ParseDATA(fstrng)
+		if err != nil {
+			return logs.Local().Errorf("failed to parse local DATA file: %s, err: %v", fstrng, err)
+		}
+		secrets, err := ParseData(data, "")
+		if err != nil {
+			return logs.Local().Errorf("failed to parse post local data: %+v, err: %v", data, err)
+		}
+		v.KVSecrets = secrets
+	}
 
-  return nil
+	return nil
 }
 
 func ParseJSON(data []byte) (map[string]interface{}, error) {
 	var parsedData map[string]interface{}
 	err := json.Unmarshal(data, &parsedData)
 	if err != nil {
-    return nil, logs.Local().Errorf("error unmarshalling JSON: %v", err)
+		return nil, logs.Local().Errorf("error unmarshalling JSON: %v", err)
 	}
 	return parsedData, nil
 }
