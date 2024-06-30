@@ -68,7 +68,6 @@ type Vault struct {
 type Details struct {
   CredPath string `env:"VAULT_CRED_PATH" envDefault:"secret/data/chewedfeed/creds"`
   DetailsPath string `env:"VAULT_DETAILS_PATH" envDefault:"secret/data/chewedfeed/details"`
-  LocalSecretsPath string `env:"VAULT_LOCAL_SECRETS_PATH" envDefault:"/secrets"`
 
   ExpireTime time.Time
 }
@@ -92,6 +91,14 @@ func NewVault(address, token string) *Vault {
 		Address: address,
 		Token:   token,
 	}
+}
+
+func (v *Vault) GetSecrets(path string) error {
+  if strings.HasPrefix(path, ".") || strings.HasPrefix(path, "/") {
+    return v.GetLocalSecrets(path)
+  }
+
+  return v.GetRemoteSecrets(path)
 }
 
 func (v *Vault) GetLocalSecrets(path string) error {
