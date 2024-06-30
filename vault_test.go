@@ -124,7 +124,7 @@ func TestGetSecret(t *testing.T) {
     testcontainers.WithImage("hashicorp/vault:1.13.0"),
     vault.WithToken("root-token"),
     vault.WithInitCommand("secrets enable transit", "write -f transit/keys/my-key"),
-    vault.WithInitCommand("kv put secret/test foo1=bar"))
+    vault.WithInitCommand("kv put secret/test1 foo1=bar"))
   assert.Nil(t, err)
   defer func() {
     err := vaultContainer.Terminate(ctx)
@@ -135,7 +135,7 @@ func TestGetSecret(t *testing.T) {
   assert.Nil(t, err)
 
   v := NewVault(address, "root-token")
-	err = v.GetRemoteSecrets("kv/data/secret/test")
+	err = v.GetRemoteSecrets("kv/data/secret/test1")
 	assert.Nil(t, err)
 
 	secret, err := v.GetSecret("foo1")

@@ -1,6 +1,7 @@
 package vault_helper
 
 import (
+  "context"
   "encoding/json"
 	"github.com/bugfixes/go-bugfixes/logs"
 	"github.com/hashicorp/vault/api"
@@ -60,10 +61,13 @@ type VaultClient interface {
 
 type Vault struct {
 	Client    VaultClient
+  Context context.Context
+
 	Address   string
 	Token     string
-	Lease     int
-	KVSecrets []KVSecret
+
+  Lease     int
+  KVSecrets []KVSecret
 }
 
 type Details struct {
@@ -85,13 +89,18 @@ type KVSecretData struct {
 func NewVault(address, token string) *Vault {
 	cfg := api.DefaultConfig()
 	cfg.Address = address
-	client, _ := api.NewClient(cfg) // Handle error appropriately
+	client, _ := api.NewClient(cfg)
 
 	return &Vault{
 		Client:  &RealVaultClient{Client: client},
 		Address: address,
 		Token:   token,
 	}
+}
+
+func (v *Vault) SetContext(ctx context.Context) *Vault {
+  v.Context = ctx
+  return v
 }
 
 func (v *Vault) GetSecrets(path string) error {
