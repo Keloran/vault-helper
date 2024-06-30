@@ -40,11 +40,11 @@ type MockVaultHelper struct {
 }
 
 func (m *MockVaultHelper) GetSecrets(path string) error {
-  if path == "" {
-    return fmt.Errorf("path not found %s", path)
-  }
+	if path == "" {
+		return fmt.Errorf("path not found %s", path)
+	}
 
-  return nil
+	return nil
 }
 
 func (m *MockVaultHelper) GetRemoteSecrets(path string) error {
