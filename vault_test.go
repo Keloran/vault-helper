@@ -7,6 +7,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestLocalSecrets(t *testing.T) {
+  mockLogical := &MockLogical{
+		MockRead: func(path string) (*api.Secret, error) {
+			// Return a mock Secret for testing purposes
+			return &api.Secret{
+				Data: map[string]interface{}{
+					"keycloak-realm": "test-realm",
+				},
+			}, nil
+		},
+	}
+
+	mockClient := &MockVaultClient{
+		MockLogical: func() LogicalClient {
+			return mockLogical
+		},
+		MockSetToken: func(token string) {
+			// Do nothing or validate the token
+		},
+	}
+
+	v := &Vault{
+		Client:  mockClient,
+		Address: "mockaddress",
+		Token:   "mocktoken",
+	}
+
+  // Test path secret
+  err := v.GetSecrets("./test_data.json")
+  assert.Nil(t, err)
+
+  localSecret, err := v.GetSecret("keycloak-realm")
+  assert.Nil(t, err)
+  assert.Equal(t, "test_realm", localSecret)
+
+  // test remote
+  err = v.GetSecrets("mockpath")
+  assert.Nil(t, err)
+
+  remoteSecret, err := v.GetSecret("keycloak-realm")
+  assert.Nil(t, err)
+  assert.Equal(t, "test-realm", remoteSecret)
+}
+
 func TestParseJSON(t *testing.T) {
   v := &Vault{}
 
@@ -33,7 +77,7 @@ func TestParseDATA(t *testing.T) {
   assert.Equal(t, "test_secret", secret)
 }
 
-func TestGetSecrets(t *testing.T) {
+func TestGetRemoteSecrets(t *testing.T) {
 	mockLogical := &MockLogical{
 		MockRead: func(path string) (*api.Secret, error) {
 			// Return a mock Secret for testing purposes
