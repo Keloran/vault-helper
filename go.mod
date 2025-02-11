@@ -1,14 +1,13 @@
 module github.com/keloran/vault-helper
 
 go 1.21
-
-toolchain go1.22.2
+toolchain go1.22.5
 
 require (
 	github.com/bugfixes/go-bugfixes v0.13.0
 	github.com/hashicorp/vault/api v1.16.0
 	github.com/stretchr/testify v1.10.0
-	github.com/testcontainers/testcontainers-go v0.33.0
+	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/testcontainers/testcontainers-go/modules/vault v0.33.0
 )
 
@@ -20,7 +19,7 @@ require (
 	github.com/containerd/containerd v1.7.18 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
-	github.com/cpuguy83/dockercfg v0.3.1 // indirect
+	github.com/cpuguy83/dockercfg v0.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/docker v27.1.1+incompatible // indirect
