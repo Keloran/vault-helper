@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.22.2
 
 require (
-	github.com/bugfixes/go-bugfixes v0.13.0
+	github.com/bugfixes/go-bugfixes v0.14.0
 	github.com/hashicorp/vault/api v1.16.0
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.33.0
