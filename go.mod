@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/bugfixes/go-bugfixes v0.14.0
-	github.com/hashicorp/vault/api v1.21.0
+	github.com/hashicorp/vault/api v1.22.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.39.0
 	github.com/testcontainers/testcontainers-go/modules/vault v0.39.0
