@@ -3,7 +3,7 @@ module github.com/keloran/vault-helper
 go 1.26.1
 
 require (
-	github.com/bugfixes/go-bugfixes v0.16.0
+	github.com/bugfixes/go-bugfixes v0.16.1
 	github.com/hashicorp/vault/api v1.22.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.41.0
